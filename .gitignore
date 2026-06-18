@@ -1,0 +1,16 @@
+.venv/
+
+__pycache__/
+*.pyc
+
+.env
+
+datasets/raw/
+datasets/processed/
+datasets/synthetic/
+
+mlruns/
+
+.ipynb_checkpoints/
+
+.DS_Store
