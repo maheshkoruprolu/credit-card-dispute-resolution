@@ -37,13 +37,36 @@ _FALLBACK_CLASSES = [
     "Unauthorized Transaction",
 ]
 
+
+def _asset_root_candidates(base: Path) -> list[Path]:
+    return [base, base / "models", base / "backend" / "models"]
+
+
+def _has_model_assets(root: Path) -> bool:
+    return any((root / name).exists() for name in (
+        "bert_dispute_model",
+        "baseline_lr_model.pkl",
+        "tfidf_vectorizer.pkl",
+        "label_encoder.pkl",
+        "chroma_db",
+    ))
+
+
+def _resolve_model_assets_root(base: Path) -> Path | None:
+    for candidate in _asset_root_candidates(base):
+        if _has_model_assets(candidate):
+            return candidate
+    return None
+
 def get_model_base() -> Path:
     env = os.environ.get("MODEL_BASE_PATH")
     return Path(env) if env else _DEFAULT_BASE
 
 def _ensure_model_assets(base: Path) -> Path:
-    if any((base / name).exists() for name in ("bert_dispute_model", "baseline_lr_model.pkl", "chroma_db")):
-        return base
+    resolved = _resolve_model_assets_root(base)
+    if resolved is not None:
+        os.environ["MODEL_BASE_PATH"] = str(resolved)
+        return resolved
 
     repo_id = os.environ.get("MODEL_REPO_ID", "")
     if not repo_id:
@@ -51,16 +74,34 @@ def _ensure_model_assets(base: Path) -> Path:
         return base
 
     revision = os.environ.get("MODEL_REPO_REVISION")
+    token = os.environ.get("HUGGINGFACE_HUB_TOKEN") or os.environ.get("HF_TOKEN")
     log.info(f"Downloading model assets from {repo_id} to {base}...")
     base.mkdir(parents=True, exist_ok=True)
-    snapshot_download(
-        repo_id=repo_id,
-        repo_type="model",
-        revision=revision,
-        local_dir=str(base),
-        local_dir_use_symlinks=False,
-    )
-    return base
+    try:
+        snapshot_download(
+            repo_id=repo_id,
+            repo_type="model",
+            revision=revision,
+            token=token,
+            local_dir=str(base),
+            local_dir_use_symlinks=False,
+        )
+    except Exception as exc:
+        log.error(
+            f"Failed to download Hugging Face model repo '{repo_id}'. "
+            f"Check that MODEL_REPO_ID is correct and that HUGGINGFACE_HUB_TOKEN is set for private repos. Error: {exc}"
+        )
+        raise
+
+    resolved = _resolve_model_assets_root(base)
+    if resolved is None:
+        log.warning(
+            f"Downloaded model repo {repo_id} to {base}, but no expected assets were found in {base}, {base / 'models'}, or {base / 'backend' / 'models'}"
+        )
+        return base
+
+    os.environ["MODEL_BASE_PATH"] = str(resolved)
+    return resolved
 
 def _load_label_encoder(path: Path) -> LabelEncoder:
     if path.exists():
