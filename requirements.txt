@@ -1,26 +1,27 @@
-pandas
-numpy
-
-scikit-learn
-
-fastapi
-uvicorn[standard]
-pydantic
-
-langchain
-langchain-community
-langchain-groq
-
-chromadb
-
-python-dotenv
-
-boto3
-
-mlflow
-
-python-multipart
-
+# Core API
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+pydantic==2.7.1
+python-multipart==0.0.9
+python-dotenv==1.0.1
 pypdf
 
-sentence-transformers
+# ML models
+torch==2.3.0
+transformers==4.41.0
+scikit-learn==1.4.2
+joblib==1.4.2
+numpy==1.26.4
+pandas
+matplotlib
+seaborn
+
+# RAG stack
+langchain==0.2.1
+langchain-groq==0.1.4
+langchain-chroma==0.1.1
+langchain-community==0.2.1
+langchain-huggingface==0.0.3
+langchain-core==0.2.3
+chromadb==0.5.0
+sentence-transformers==3.0.1

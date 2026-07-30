@@ -2,6 +2,11 @@
 
 __pycache__/
 *.pyc
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.bin
 
 .env
 
@@ -9,8 +14,13 @@ datasets/raw/
 datasets/processed/
 datasets/synthetic/
 
+backend/models/
+
 mlruns/
 
 .ipynb_checkpoints/
 
 .DS_Store
+markdown/
+
+tests/
