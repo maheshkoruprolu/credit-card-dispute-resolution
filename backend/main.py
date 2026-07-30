@@ -73,9 +73,12 @@ def _ensure_model_assets(base: Path) -> Path:
         log.warning(f"Model assets not found in {base}; set MODEL_REPO_ID to download them from Hugging Face Hub")
         return base
 
-    revision = os.environ.get("MODEL_REPO_REVISION")
+    revision = (os.environ.get("MODEL_REPO_REVISION") or "main").strip()
+    if revision.lower() in {"", "revision", "latest", "default"}:
+        revision = "main"
+
     token = os.environ.get("HUGGINGFACE_HUB_TOKEN") or os.environ.get("HF_TOKEN")
-    log.info(f"Downloading model assets from {repo_id} to {base}...")
+    log.info(f"Downloading model assets from {repo_id} (revision={revision}) to {base}...")
     base.mkdir(parents=True, exist_ok=True)
     try:
         snapshot_download(
