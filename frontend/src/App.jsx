@@ -3,6 +3,7 @@ import DisputeForm from './components/DisputeForm'
 import ResultCard  from './components/ResultCard'
 import PDFUpload   from './components/PDFUpload'
 import Dashboard   from './components/Dashboard'
+import { apiUrl } from './lib/api'
 
 const TABS = [
   { id: 'analyze',   label: '⚡ Analyze Dispute' },
@@ -63,9 +64,9 @@ export default function App() {
 
       <div className="footer">
         Automated Credit Card Dispute Resolution via NLP &nbsp;·&nbsp;
-        <a href="/api/docs" target="_blank" rel="noreferrer">API Docs ↗</a>
+        <a href={apiUrl('/api/docs')} target="_blank" rel="noreferrer">API Docs ↗</a>
         &nbsp;·&nbsp;
-        <a href="/api/health" target="_blank" rel="noreferrer">Health ↗</a>
+        <a href={apiUrl('/api/health')} target="_blank" rel="noreferrer">Health ↗</a>
       </div>
     </div>
   )

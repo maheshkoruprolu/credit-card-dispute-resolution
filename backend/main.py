@@ -13,19 +13,63 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from sklearn.preprocessing import LabelEncoder
+from huggingface_hub import snapshot_download
 
-from rag_engine import PolicyRAG
-from severity_scorer import score_complaint
+try:
+    from .rag_engine import PolicyRAG
+    from .severity_scorer import score_complaint
+except ImportError:  # pragma: no cover - keeps notebook/script usage working
+    from rag_engine import PolicyRAG
+    from severity_scorer import score_complaint
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
 
 # ── Model paths ───────────────────────────────────────────────────────────────
 _DEFAULT_BASE = Path(__file__).parent / "models"
+_FALLBACK_CLASSES = [
+    "Billing Error",
+    "Duplicate Charge",
+    "Goods Not Received",
+    "Merchant Fraud",
+    "Service Not Provided",
+    "Unauthorized Transaction",
+]
 
 def get_model_base() -> Path:
     env = os.environ.get("MODEL_BASE_PATH")
     return Path(env) if env else _DEFAULT_BASE
+
+def _ensure_model_assets(base: Path) -> Path:
+    if any((base / name).exists() for name in ("bert_dispute_model", "baseline_lr_model.pkl", "chroma_db")):
+        return base
+
+    repo_id = os.environ.get("MODEL_REPO_ID", "")
+    if not repo_id:
+        log.warning(f"Model assets not found in {base}; set MODEL_REPO_ID to download them from Hugging Face Hub")
+        return base
+
+    revision = os.environ.get("MODEL_REPO_REVISION")
+    log.info(f"Downloading model assets from {repo_id} to {base}...")
+    base.mkdir(parents=True, exist_ok=True)
+    snapshot_download(
+        repo_id=repo_id,
+        repo_type="model",
+        revision=revision,
+        local_dir=str(base),
+        local_dir_use_symlinks=False,
+    )
+    return base
+
+def _load_label_encoder(path: Path) -> LabelEncoder:
+    if path.exists():
+        return joblib.load(path)
+
+    le = LabelEncoder()
+    le.fit(_FALLBACK_CLASSES)
+    log.warning(f"Label encoder not found at {path}; using built-in category order")
+    return le
 
 # ── Global holders ────────────────────────────────────────────────────────────
 class Models:
@@ -56,7 +100,7 @@ def clean_for_tfidf(text: str) -> str:
 # ── Lifespan ──────────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    base = get_model_base()
+    base = _ensure_model_assets(get_model_base())
     Models.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     log.info(f"Device: {Models.device}")
 
@@ -68,7 +112,7 @@ async def lifespan(app: FastAPI):
             Models.bert_model = AutoModelForSequenceClassification.from_pretrained(
                 str(bert_path)).to(Models.device)
             Models.bert_model.eval()
-            Models.bert_le = joblib.load(bert_path / "label_encoder.pkl")
+            Models.bert_le = _load_label_encoder(bert_path / "label_encoder.pkl")
             Models.bert_loaded = True
             log.info("✅ DistilBERT loaded")
         except Exception as e:
@@ -80,7 +124,7 @@ async def lifespan(app: FastAPI):
         try:
             Models.lr_model = joblib.load(lr_path)
             Models.tfidf    = joblib.load(base / "tfidf_vectorizer.pkl")
-            Models.lr_le    = joblib.load(base / "label_encoder.pkl")
+            Models.lr_le    = _load_label_encoder(base / "label_encoder.pkl")
             Models.lr_loaded = True
             log.info("✅ Baseline loaded")
         except Exception as e:

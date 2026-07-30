@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { apiUrl } from '../lib/api'
 
 const SAMPLES = [
   { label: '🚨 Unauthorized',  text: 'I noticed a charge of $299 on my statement that I never made. Someone used my credit card without my permission at an online electronics store. I did not authorize this transaction and have never shopped at this retailer.' },
@@ -19,7 +20,7 @@ export default function DisputeForm({ onResult, onError, onLoading, loading }) {
     if (!trimmed || trimmed.length < 10) return
     onLoading(true)
 
-    const endpoint = fullMode ? '/api/predict-full' : '/api/predict'
+    const endpoint = apiUrl(fullMode ? '/api/predict-full' : '/api/predict')
     const body     = fullMode
       ? { complaint_text: trimmed, model, include_rag: true, include_severity: true }
       : { complaint_text: trimmed, model }
@@ -36,7 +37,7 @@ export default function DisputeForm({ onResult, onError, onLoading, loading }) {
       }
       onResult(await res.json())
     } catch (e) {
-      onError(e.message || 'Cannot reach API. Make sure backend is running?')
+      onError(e.message || 'Cannot reach API. Make sure the backend service is available?')
     } finally {
       onLoading(false)
     }

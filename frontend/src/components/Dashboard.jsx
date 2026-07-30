@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { apiUrl } from '../lib/api'
 
 const F1_DATA = [
   { category: '🚨 Unauthorized Transaction', baseline: 0.77, bert: 0.88 },
@@ -22,7 +23,7 @@ export default function Dashboard() {
   const [hError, setHError] = useState(false)
 
   useEffect(() => {
-    fetch('/api/health', { signal: AbortSignal.timeout(10000) })
+    fetch(apiUrl('/api/health'), { signal: AbortSignal.timeout(10000) })
       .then(r => r.json())
       .then(setHealth)
       .catch(() => setHError(true))
@@ -40,7 +41,7 @@ export default function Dashboard() {
           </div>
         )}
         {hError && (
-          <div className="error-box">⚠️ Cannot reach backend. Make sure the Colab cell is running.</div>
+          <div className="error-box">⚠️ Cannot reach backend. Check that the API deployment is running.</div>
         )}
         {health && (
           <div className="metrics-row" style={{ marginBottom: 0 }}>

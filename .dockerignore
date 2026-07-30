@@ -1,0 +1,12 @@
+datasets/
+frontend/
+notebooks/
+tests/
+markdown/
+docs/
+policies/
+*.ipynb
+*.pyc
+__pycache__/
+.git/
+.vscode/

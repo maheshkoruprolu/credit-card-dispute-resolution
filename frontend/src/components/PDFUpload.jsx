@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { apiUrl } from '../lib/api'
 
 const ICONS = {
   'Unauthorized Transaction': '🚨',
@@ -75,7 +76,7 @@ export default function PDFUpload() {
         model: 'bert',
       }))
 
-      const res = await fetch('/api/batch-predict', {
+      const res = await fetch(apiUrl('/api/batch-predict'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(batch),

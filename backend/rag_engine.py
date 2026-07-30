@@ -20,9 +20,13 @@ log = logging.getLogger(__name__)
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 _BASE       = Path(__file__).parent
-CHROMA_DIR  = _BASE / "models" / "chroma_db"
 COLLECTION  = "policy_docs"
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+
+
+def _get_chroma_dir() -> Path:
+    base = Path(os.environ.get("MODEL_BASE_PATH", _BASE / "models"))
+    return base / "chroma_db"
 
 # ── Resolution rules (instant — no LLM needed) ────────────────────────────────
 RESOLUTION_RULES = {
@@ -132,6 +136,7 @@ class PolicyRAG:
     def load(self) -> None:
         """Load ChromaDB index and connect to Groq. Call at app startup."""
         groq_key = os.environ.get("GROQ_API_KEY", "")
+        chroma_dir = _get_chroma_dir()
 
         # 1. Embedding model (local, free, no API key)
         log.info("Loading embedding model...")
@@ -142,16 +147,16 @@ class PolicyRAG:
         )
 
         # 2. Load ChromaDB from disk
-        if not CHROMA_DIR.exists():
+        if not chroma_dir.exists():
             log.error(
-                f"ChromaDB not found at {CHROMA_DIR}. "
+                f"ChromaDB not found at {chroma_dir}. "
                 "Run notebook 05_rag_setup.ipynb first to build the index."
             )
             return
 
-        log.info(f"Loading ChromaDB from {CHROMA_DIR}...")
+        log.info(f"Loading ChromaDB from {chroma_dir}...")
         self._vectorstore = Chroma(
-            persist_directory=str(CHROMA_DIR),
+            persist_directory=str(chroma_dir),
             embedding_function=self._embeddings,
             collection_name=COLLECTION,
         )
