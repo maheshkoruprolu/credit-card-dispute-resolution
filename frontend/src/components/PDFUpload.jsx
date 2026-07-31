@@ -78,7 +78,10 @@ export default function PDFUpload() {
 
       const res = await fetch(apiUrl('/api/batch-predict'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': '1'
+        },
         body: JSON.stringify(batch),
       })
       if (!res.ok) {

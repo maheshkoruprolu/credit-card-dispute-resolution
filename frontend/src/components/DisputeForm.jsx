@@ -28,7 +28,10 @@ export default function DisputeForm({ text, setText, onResult, onError, onLoadin
     try {
       const res = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': '1'
+        },
         body: JSON.stringify(body),
       })
       if (!res.ok) {
