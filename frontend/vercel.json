@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://afterlife-crudeness-spent.ngrok-free.dev/:path*"
+    }
+  ]
+}
