@@ -10,10 +10,10 @@ const SAMPLES = [
   { label: '⚠️ Fake merchant', text: 'The website was completely fake. I paid $200 for electronics but the merchant never existed. The website disappeared within hours of my purchase. I was scammed by a fraudulent online store and lost my money.' },
 ]
 
-export default function DisputeForm({ onResult, onError, onLoading, loading }) {
-  const [text,     setText]     = useState('')
+// text + setText are now lifted to App so other components (DisputeLetter, History) can access them
+export default function DisputeForm({ text, setText, onResult, onError, onLoading, loading }) {
   const [model,    setModel]    = useState('bert')
-  const [fullMode, setFullMode] = useState(true)   // true = /predict-full with RAG
+  const [fullMode, setFullMode] = useState(true)
 
   async function handleSubmit() {
     const trimmed = text.trim()
@@ -37,7 +37,7 @@ export default function DisputeForm({ onResult, onError, onLoading, loading }) {
       }
       onResult(await res.json())
     } catch (e) {
-      onError(e.message || 'Cannot reach API. Make sure the backend service is available?')
+      onError(e.message || 'Cannot reach API. Is the Colab backend running?')
     } finally {
       onLoading(false)
     }
@@ -58,7 +58,6 @@ export default function DisputeForm({ onResult, onError, onLoading, loading }) {
       />
 
       <div className="form-row" style={{ marginTop: 12 }}>
-        {/* Left: model + mode toggles */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <div className="model-toggle">
             <button className={`toggle-btn ${model === 'bert' ? 'active' : ''}`}
@@ -79,13 +78,12 @@ export default function DisputeForm({ onResult, onError, onLoading, loading }) {
             </button>
             <button className={`toggle-btn ${!fullMode ? 'active' : ''}`}
               onClick={() => setFullMode(false)} disabled={loading}
-              title="Classification only, no RAG (~100ms)">
+              title="Classification only (~100ms)">
               Fast only
             </button>
           </div>
         </div>
 
-        {/* Right: char count + submit */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span className="char-hint">
             {text.length}/5000 &nbsp;·&nbsp; Ctrl+Enter
