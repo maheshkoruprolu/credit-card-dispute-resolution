@@ -10,7 +10,7 @@ import Toast         from './components/Toast'
 
 const TABS = [
   { id: 'analyze',   label: '⚡ Analyze Dispute' },
-  { id: 'pdf',       label: '📄 PDF Batch Upload' },
+  { id: 'pdf',       label: '📄 PDF Upload' },
   { id: 'dashboard', label: '📊 Model Dashboard' },
   { id: 'history',   label: '🕐 History' },
 ]
@@ -49,7 +49,7 @@ export default function App() {
       {/* ── Header ── */}
       <div className="header">
         <div className="header-eyebrow">
-          <span>●</span> G38 AIML · Mahesh · Project #3
+          <span>●</span> Clean dispute assistant
         </div>
         <h1>Credit Card Dispute Resolver</h1>
         <p>
@@ -120,8 +120,7 @@ export default function App() {
 
       {/* ── Footer ── */}
       <div className="footer">
-        Automated Credit Card Dispute Resolution via NLP &nbsp;·&nbsp;
-        G38 AIML Project &nbsp;·&nbsp;
+        Automated credit card dispute resolution via NLP &nbsp;·&nbsp;
         <a href={apiUrl("/api/docs")} target="_blank" rel="noreferrer">API Docs ↗</a>
         &nbsp;·&nbsp;
         <a href={apiUrl("/api/health")} target="_blank" rel="noreferrer">Health ↗</a>

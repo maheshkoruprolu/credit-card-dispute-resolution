@@ -40,7 +40,7 @@ export default function DisputeForm({ text, setText, onResult, onError, onLoadin
       }
       onResult(await res.json())
     } catch (e) {
-      onError(e.message || 'Cannot reach API. Is the Colab backend running?')
+      onError(e.message || 'Cannot reach API. Please check that the backend is running.')
     } finally {
       onLoading(false)
     }

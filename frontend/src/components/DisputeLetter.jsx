@@ -76,10 +76,7 @@ Please contact me at the information associated with my account to discuss this 
 
 Sincerely,
 
-[Your Full Name]
-[Your Address]
-[Your Phone Number]
-[Your Email Address]
+[Your Contact Information]
 
 ---
 This letter was prepared with assistance from an automated dispute resolution system trained on CFPB complaint data.

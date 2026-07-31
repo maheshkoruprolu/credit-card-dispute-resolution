@@ -49,7 +49,7 @@ useEffect(() => {
           </div>
         )}
         {hError && (
-          <div className="error-box">⚠️ Cannot reach backend. Check that the API deployment is running.</div>
+          <div className="error-box">⚠️ Cannot reach backend. Check that the API server is running.</div>
         )}
         {health && (
           <div className="metrics-row" style={{ marginBottom: 0 }}>
@@ -204,8 +204,6 @@ useEffect(() => {
             ['Backend', 'FastAPI + Uvicorn'],
             ['Frontend', 'React + Vite'],
             ['Runtime', 'Google Colab T4 GPU'],
-            ['Orchestration', 'DataBricks Community Edition'],
-            ['Deployment', 'Railway → AWS EC2'],
           ].map(([role, tech]) => (
             <div key={role} style={{
               background: 'var(--bg-card2)',
