@@ -15,12 +15,12 @@ const PRIORITY_COLOR = {
 
 // Split a big PDF text into individual complaint paragraphs
 function splitIntoComplaints(text) {
-  // Split on double newlines or numbered patterns
   const chunks = text
-    .split(/\n{2,}|(?=\d+\.\s)/g)
+    .split(/={10,}|(?=Complaint\s+\d+)/i)
     .map(c => c.replace(/\s+/g, ' ').trim())
-    .filter(c => c.length > 40 && c.length < 5000)
-  return chunks.length ? chunks : [text.slice(0, 4000)]
+    .filter(c => c.length > 20);
+
+  return chunks.length ? chunks : [text.trim()];
 }
 
 export default function PDFUpload() {
