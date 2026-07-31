@@ -22,12 +22,20 @@ export default function Dashboard() {
   const [health, setHealth] = useState(null)
   const [hError, setHError] = useState(false)
 
-  useEffect(() => {
-    fetch(apiUrl('/api/health'), { signal: AbortSignal.timeout(10000) })
-      .then(r => r.json())
-      .then(setHealth)
-      .catch(() => setHError(true))
-  }, [])
+useEffect(() => {
+  fetch(apiUrl('/api/health'), {
+    signal: AbortSignal.timeout(10000),
+    headers: {
+      "ngrok-skip-browser-warning": "1"
+    }
+  })
+    .then(r => r.json())
+    .then(setHealth)
+    .catch(e => {
+      console.error(e);
+      setHError(true);
+    });
+}, []);
 
   return (
     <div>
