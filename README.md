@@ -233,6 +233,3 @@ Good next enhancements would be:
 - Replacing local Colab runtime usage with a stable deployment target.
 - Adding more automated tests around the batch upload and dispute letter flow.
 
-## License And Submission
-
-If this is a class submission, this README is meant to document the project as implemented now: backend, frontend, datasets, notebooks, and policy sources are all included in this repository.
