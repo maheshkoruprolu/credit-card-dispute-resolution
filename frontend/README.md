@@ -1,16 +1,45 @@
-# React + Vite
+# Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This folder contains the React + Vite client for the credit card dispute resolution project.
 
-Currently, two official plugins are available:
+## What It Does
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The frontend provides:
 
-## React Compiler
+- A complaint analysis form with fast-only and full-analysis modes.
+- Model switching between BERT and the TF-IDF baseline.
+- PDF, TXT, and CSV batch upload support.
+- A dashboard for backend health and model stats.
+- A local history panel that uses browser `localStorage`.
+- A generated dispute letter that can be edited, copied, or downloaded.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Main Files
 
-## Expanding the ESLint configuration
+- `src/App.jsx` - top-level tab shell and result flow.
+- `src/components/DisputeForm.jsx` - complaint input and submission.
+- `src/components/PDFUpload.jsx` - batch file upload and export.
+- `src/components/Dashboard.jsx` - backend health and model overview.
+- `src/components/DisputeLetter.jsx` - dispute letter generation.
+- `src/components/HistoryPanel.jsx` - browser-local history storage and management.
+- `src/lib/api.js` - backend URL helper.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Setup
+
+```bash
+npm install
+npm run dev
+```
+
+If the backend is not on the same origin, set `VITE_API_BASE_URL` before starting the app.
+
+## Build
+
+```bash
+npm run build
+```
+
+## Notes
+
+- This is no longer a stock Vite template.
+- The UI is wired to the real backend endpoints used by the project.
+- History is stored only in the browser, not in a server database.
